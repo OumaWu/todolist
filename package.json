@@ -1,0 +1,10 @@
+{
+    "name": "todolist",
+    "version": "0.1.0",
+    "dependencies": {
+        "express": "~4.16.4",
+        "socket.io": "~2.2.0"
+    },
+    "author": "Jiahong <jiahongwu123@email.com>",
+    "description": "A real time online co-editing todolist with socket.io"
+}

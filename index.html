@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Super Chat room</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        #task {
+            width: 250px;
+        }
+
+        #form-edit {
+           margin-bottom: 10px; 
+        }
+
+        #todolist {
+            margin: 0 auto;
+            width: 500px;
+            text-align: left;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Todolist Partagé!</h1>
+
+    <form method="POST" action="/" id="form-edit">
+        <label for="task">Que dois-je faire ?</label>
+        <input type="text" name="task" id="task" placeholder="Saisir votre tache..." />
+        <button>Ajouter</button>
+    </form>
+
+    <ul id="todolist">
+    </ul>
+</body>
+
+</html>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://localhost:8080');
+
+    var todolist = [];
+
+    // get the todolist from the server
+    socket.on('todolist', (todolist_server) => {
+        todolist = todolist_server;
+        // render the list
+        renderList(todolist);
+    });
+
+    // update and rerender the list when there's a message from the server
+    socket.on('update', (todolist_server) => {
+        todolist = todolist_server;
+        // render the list
+        renderList(todolist);
+    })
+
+    // send message
+    $('#form-edit').submit(function (e) {
+
+        let task = $('#task');
+
+        if (task.val() !== '') {
+
+            todolist.push(task.val());
+
+            // rerender the list
+            renderList(todolist);
+
+            // send the updated list to server
+            socket.emit('update', todolist);
+
+            // clear input field
+            task.val('');
+        }
+        // block form submission, in order to avoid refreshing the page
+        e.preventDefault();
+    });
+
+    // render the list
+    function renderList(todolist) {
+
+        // clear the list
+        $('#todolist').html('');
+
+        // then render it
+        for (var i in todolist) {
+            $('#todolist').append(`<li><a href="javascript:deleteTask(${i})">&#x2718;</a>` + todolist[i] + '</li>');
+        }
+    }
+
+    // delete a task from the list
+    function deleteTask(i) {
+        todolist.splice(i, 1);
+        renderList(todolist);
+        // send the updated list to server
+        socket.emit('update', todolist);
+    }
+</script>
