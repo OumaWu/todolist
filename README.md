@@ -14,3 +14,6 @@
 
 ### Deleting a task
 ![Screenshot](screenshot/5.png)
+
+### Session tatus on the terminal
+![Screenshot](screenshot/6.png)
